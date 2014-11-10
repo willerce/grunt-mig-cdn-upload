@@ -1,0 +1,32 @@
+{
+  "name": "grunt-mig-cdn-upload",
+  "version": "0.0.1",
+  "description": "The best Grunt plugin ever.",
+  "repository": "",
+  "author": {
+    "name": "willerce",
+    "email": "willerce@gmail.com",
+    "url": "willerce.com"
+  },
+  "keywords": [
+    "gruntplugin"
+  ],
+  "main": "Gruntfile.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "grunt-contrib-nodeunit": "~0.3.0",
+    "grunt": "~0.4.2",
+    "jshint-stylish": "~0.1.5",
+    "load-grunt-tasks": "~0.3.0",
+    "request": "^2.47.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {
+    "fs-extra": "^0.12.0"
+  }
+}
