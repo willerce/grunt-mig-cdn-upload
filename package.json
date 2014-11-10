@@ -1,16 +1,13 @@
 {
   "name": "grunt-mig-cdn-upload",
-  "version": "0.0.1",
-  "description": "The best Grunt plugin ever.",
-  "repository": "",
-  "author": {
-    "name": "willerce",
-    "email": "willerce@gmail.com",
-    "url": "willerce.com"
+  "version": "0.0.2",
+  "description": "grunt mig cdn upload tool",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/willerce/grunt-mig-cdn-upload.git"
   },
-  "keywords": [
-    "gruntplugin"
-  ],
+  "author": "willerce <willerce@gmail.com> (willerce.com)",
+  "keywords": [],
   "main": "Gruntfile.js",
   "engines": {
     "node": ">= 0.8.0"
@@ -20,13 +17,20 @@
     "grunt-contrib-nodeunit": "~0.3.0",
     "grunt": "~0.4.2",
     "jshint-stylish": "~0.1.5",
-    "load-grunt-tasks": "~0.3.0",
-    "request": "^2.47.0"
+    "load-grunt-tasks": "~0.3.0"
   },
   "scripts": {
     "test": "grunt test"
   },
   "dependencies": {
-    "fs-extra": "^0.12.0"
-  }
+    "fs-extra": "^0.12.0",
+    "request": "^2.47.0"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "bugs": {
+    "url": "https://github.com/willerce/grunt-mig-cdn-upload/issues"
+  },
+  "homepage": "https://github.com/willerce/grunt-mig-cdn-upload"
 }
