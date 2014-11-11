@@ -9,6 +9,7 @@
 var fs = require('fs-extra');
 var request = require('request');
 var path = require('path');
+var async = require('async');
 
 'use strict';
 
@@ -21,32 +22,21 @@ module.exports = function (grunt) {
     var options = this.options({
       upload_url: '',
       appname: '',
-      folder: '',
       user: '',
       key: ''
     });
 
-    // 文件遍历
-    this.files.forEach(function (file) {
-      file.src.filter(function (filepath) {
-        //移除不存在的文件
-        if (!grunt.file.exists(filepath)) {
-          grunt.log.warn('Source file "' + filepath + '" not found.');
-          return false;
-        } else {
+    var q = async.queue(function (task, callback) {
 
-          var stats = fs.statSync(filepath);
+      var filepath = task.filepath;
+      var file = task.file;
 
-          if (stats.isFile()) {
-            return true;
-          }
+      grunt.log.writeln("开始上传:" + filepath);
 
-        }
-      }).map(function (filepath) {
+      fs.stat(filepath, function (err, stats) {
 
         var fileType = path.extname(filepath);
         var fileName = path.basename(filepath, fileType);
-        var stats = fs.statSync(filepath);
         var fileSize = stats["size"];
 
         //拼接 URL
@@ -55,7 +45,7 @@ module.exports = function (grunt) {
           '&user=' + options.user +
           '&filename=' + fileName +
           '&filetype=' + fileType.replace('.', '') +
-          '&filepath=' + options.folder +
+          '&filepath=' + path.dirname(file.dest) +
           '&filesize=' + fileSize;
 
         //读取文件流上传
@@ -66,29 +56,53 @@ module.exports = function (grunt) {
               headers: {'X-CDN-Authentication': options.key}
             }, function (error, response, body) {
 
-              if (response.statusCode === 200) {
+              if (error) {
+                grunt.log.error("网络错误：" + filepath + "，错误信息：" + JSON.stringify(error));
+              } else if (response.statusCode === 200) {
+
                 //上传成功
                 var bodyObj = JSON.parse(body);
                 var urls = bodyObj['cdn_url'].split('|');
 
-                if (!!urls || urls.length === 0) {
+                if (!urls || urls.length === 0) {
                   grunt.log.error(JSON.stringify({'msg': 'error', 'url': 'not found'}));
+                  grunt.log.error(body);
                 } else {
-                  grunt.log.writeln('File "' + urls + '" uploaded.');
+                  grunt.log.ok('File "' + urls + '" uploaded.');
                 }
 
               } else {
-                grunt.log.error(JSON.stringify({
+                grunt.log.error("上传错误：" + filepath + JSON.stringify({
                   'msg': 'error',
                   'url': 'upload error, response status code is ' + response.statusCode
                 }));
               }
 
-              done();
+              callback();
+
             }
           ));
       });
-    });
-  });
+    }, 100);
 
+    q.drain = function () {
+      done();
+    };
+
+    this.files.forEach(function (file) {
+      file.src.filter(function (filepath) {
+        if (!grunt.file.exists(filepath)) {
+          grunt.log.warn('Source file "' + filepath + '" not found.');
+          return false;
+        } else {
+          return !!grunt.file.isFile(filepath);
+        }
+      }).map(function (filepath) {
+        //循环添加任务
+        q.push({file: file, filepath: filepath});
+
+      });
+    });
+
+  });
 };
