@@ -20,7 +20,8 @@ module.exports = function (grunt) {
           upload_url: 'url',//上传地址，不需要修改
           appname: 'appname',//业务英文名称：appname=haina_img_new;
           user: 'user',//确保上传者（user字段值）是业务的管理员之一
-          key: 'key' //这个key可以找CDN运维同学获得
+          key: 'key', //这个key可以找CDN运维同学获得
+          isunzip: 0 //是否解压 zip 文件
         },
         files: [{expand: true, cwd: 'test/upload', src: ['**'], filter: 'isFile', dest: '/proj-text/beta/'}]
       },
@@ -29,7 +30,8 @@ module.exports = function (grunt) {
           upload_url: 'url',//上传地址，不需要修改
           appname: 'appname',//业务英文名称：appname=haina_img_new;
           user: 'user',//确保上传者（user字段值）是业务的管理员之一
-          key: 'key' //这个key可以找CDN运维同学获得
+          key: 'key', //这个key可以找CDN运维同学获得
+          isunzip: 0 //是否解压 zip 文件
         },
         files: [
           {expand: true, cwd: 'test/upload', src: ['**'], filter: 'isFile', dest: '/proj-text/dist/'},

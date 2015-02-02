@@ -23,7 +23,8 @@ module.exports = function (grunt) {
       upload_url: '',
       appname: '',
       user: '',
-      key: ''
+      key: '',
+      isunzip: 0
     });
 
     var q = async.queue(function (task, callback) {
@@ -46,7 +47,8 @@ module.exports = function (grunt) {
           '&filename=' + fileName +
           '&filetype=' + fileType.replace('.', '') +
           '&filepath=' + path.dirname(file.dest) +
-          '&filesize=' + fileSize;
+          '&filesize=' + fileSize +
+          '&isunzip=' + options.isunzip;
 
         //读取文件流上传
         fs.createReadStream(path.join(process.cwd(), filepath)).pipe(
@@ -62,13 +64,10 @@ module.exports = function (grunt) {
 
                 //上传成功
                 var bodyObj = JSON.parse(body);
-                var urls = bodyObj['cdn_url'].split('|');
-
-                if (!urls || urls.length === 0) {
-                  grunt.log.error(JSON.stringify({'msg': 'error', 'url': 'not found'}));
-                  grunt.log.error(body);
+                if (bodyObj["ret_code"] !== 200) {
+                  grunt.log.error(JSON.stringify({file: filepath, 'msg': bodyObj["err_msg"], 'url': 'not found'}));
                 } else {
-                  grunt.log.ok('File "' + urls + '" uploaded.');
+                  grunt.log.ok(filepath + ' uploaded.');
                 }
 
               } else {
