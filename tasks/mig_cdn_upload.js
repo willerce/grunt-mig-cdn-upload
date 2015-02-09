@@ -10,6 +10,8 @@ var fs = require('fs-extra');
 var request = require('request');
 var path = require('path');
 var async = require('async');
+var exec = require('child_process').exec;
+var spawn = require('child_process').spawn;
 
 'use strict';
 
@@ -27,12 +29,25 @@ module.exports = function (grunt) {
       isunzip: 0
     });
 
+    var openURL = function (url) {
+      switch (process.platform) {
+        case "darwin":
+          exec('open ' + url);
+          break;
+        case "win32":
+          exec('start ' + url);
+          break;
+        default:
+          spawn('xdg-open', [url]);
+      }
+    };
+
     var q = async.queue(function (task, callback) {
 
       var filepath = task.filepath;
       var file = task.file;
 
-      grunt.log.writeln("开始上传:" + filepath);
+      grunt.log.writeln("开始上传：" + filepath);
 
       fs.stat(filepath, function (err, stats) {
 
@@ -67,7 +82,9 @@ module.exports = function (grunt) {
                 if (bodyObj["ret_code"] !== 200) {
                   grunt.log.error(JSON.stringify({file: filepath, 'msg': bodyObj["err_msg"], 'url': 'not found'}));
                 } else {
-                  grunt.log.ok(filepath + ' uploaded.');
+                  var url = "http://wximg.gtimg.com/tmt" + path.dirname(file.dest) + "/";
+                  grunt.log.ok('上传成功：' + url);
+                  openURL(url);
                 }
 
               } else {
