@@ -26,7 +26,8 @@ module.exports = function (grunt) {
       appname: '',
       user: '',
       key: '',
-      isunzip: 0
+      isunzip: 0,
+      openUrlAfterUploaded: ''
     });
 
     var openURL = function (url) {
@@ -82,9 +83,14 @@ module.exports = function (grunt) {
                 if (bodyObj["ret_code"] !== 200) {
                   grunt.log.error(JSON.stringify({file: filepath, 'msg': bodyObj["err_msg"], 'url': 'not found'}));
                 } else {
-                  var url = "http://wximg.gtimg.com/tmt" + path.dirname(file.dest) + "/";
+
+                  if(options.openUrlAfterUploaded && options.openUrlAfterUploaded.length > 0) {
+                    var url = options.openUrlAfterUploaded + path.dirname(file.dest) + "/";
+                    openURL(url);
+                  }
+
                   grunt.log.ok('上传成功：' + url);
-                  openURL(url);
+
                 }
 
               } else {
